@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktien Analyse Charts</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .container { max-width: 1000px; margin: auto; background-color: #f4f4f4; padding: 20px; border-radius: 8px; }
+        .chart-container { margin-bottom: 30px; text-align: center; background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .chart-container img { max-width: 100%; height: auto; }
+        .error { color: red; }
+        h1 { text-align: center; color: #333; }
+        a, button, select { display: inline-block; margin-bottom: 20px; text-decoration: none; color: white; background-color: #007bff; padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; }
+        select { background-color: #28a745; }
+        button:hover, a:hover, select:hover { opacity: 0.9; }
+        table { width: 100%; margin-top: 30px; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: center; border-bottom: 1px solid #ddd; }
+        .positive { color: green; font-weight: bold; }
+        .negative { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aktien Analyse - Charts</h1>
+
+        <form method="post" action="{{ url_for('analyze') }}">
+            <label for="years">Zeitraum wählen:</label><br><br>
+            <select id="years" name="years">
+                <option value="0.5">6 Monate</option>
+                <option value="1">1 Jahr</option>
+                <option value="5">5 Jahre</option>
+                <option value="10">10 Jahre</option>
+                <option value="20">20 Jahre</option>
+            </select>
+
+            <br><br>
+
+            <label for="use_adjusted">Berechnungsmethode:</label><br><br>
+            <select id="use_adjusted" name="use_adjusted">
+                <option value="yes" selected>Mit Dividenden (Adjusted Close)</option>
+                <option value="no">Ohne Dividenden (nur Close)</option>
+            </select>
+
+            <br><br>
+
+            <button type="submit">Analyse starten</button>
+        </form>
+
+        <a href="{{ url_for('index') }}">Zurück zur Auswahl</a>
+        <a href="{{ url_for('analyze') }}">PDF Download</a>
+
+        {% if charts %}
+            {% for chart_data in charts %}
+                <div class="chart-container">
+                    <h2>{{ chart_data.name }} ({{ chart_data.ticker }})</h2>
+                    {% if chart_data.chart %}
+                        <img src="data:image/png;base64,{{ chart_data.chart }}" alt="Chart für {{ chart_data.name }}">
+                    {% elif chart_data.error %}
+                        <p class="error">Konnte Chart nicht erstellen: {{ chart_data.error }}</p>
+                    {% else %}
+                        <p class="error">Konnte Chart nicht erstellen (unbekannter Fehler).</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Keine Aktien zur Analyse vorhanden oder keine Daten verfügbar.</p>
+        {% endif %}
+
+        {% if analysis_results %}
+            <h2>Zusammenfassung der Renditen</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Wertpapier</th>
+                        <th>Kursgewinn (%)</th>
+                        <th>Dividenden (%)</th>
+                        <th>Gesamtrendite (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in analysis_results %}
+                    <tr>
+                        <td>{{ result.name }} ({{ result.ticker }})</td>
+                        <td>{{ result.kursgewinn }}</td>
+                        <td>{{ result.dividenden }}</td>
+                        {% if result.gesamtrendite >= 0 %}
+                            <td class="positive">{{ result.gesamtrendite }}</td>
+                        {% else %}
+                            <td class="negative">{{ result.gesamtrendite }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+</body>
+</html>

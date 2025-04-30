@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Erbrecht-Rechner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem auto;
+            max-width: 800px;
+            padding: 0 1rem;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .bild-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .bild-container img {
+            max-width: 100%;
+            width: 320px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+        form {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        label {
+            display: block;
+            margin-top: 1rem;
+            font-weight: bold;
+            color: #444;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 0.3rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            margin-right: 0.5rem;
+        }
+        button[type="button"] {
+            background-color: #dc3545;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        #result, #adminResult {
+            margin-top: 2rem;
+            background: #f4f4f4;
+            padding: 1rem;
+            border-radius: 6px;
+            white-space: pre-line;
+            font-family: monospace;
+        }
+        .hinweis {
+            margin-top: 0.25rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .haftungsausschluss {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 1rem;
+            text-align: center;
+            background: #fff;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        @media (max-width: 600px) {
+            body {
+                margin: 1rem;
+                padding: 0 0.5rem;
+            }
+            button {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Erbrecht-Rechner</h1>
+    
+    <div class="links">
+             <a href="{{ url_for('index') }}">Aktien Analyse</a>
+             </br>
+            
+             <a href="{{ url_for('erbrecht_rechner') }}">Erbrecht-Rechner</a>
+     </div>
+     </br>
+    
+
+   <div class="bild-container">
+
+	<img src="../static/NachDemSterbenErben.png" alt="Schwebende Glaskugel mit Chibi-Geschwisterpaar" />
+    </div>
+
+
+ 	
+    
+    <div class="haftungsausschluss">
+        <strong>Hinweis:</strong> Dieses Tool dient ausschließlich zu Informationszwecken und stellt keine rechtliche Beratung dar. Für eine verbindliche Klärung Ihrer Erbrechtsfragen wenden Sie sich bitte an einen Anwalt oder Notar.
+    </div>
+
+    <form id="erbeForm" onsubmit="event.preventDefault(); berechne();">
+        <label for="nachlass">Nachlasswert (€):</label>
+        <input type="number" id="nachlass" name="nachlass" min="0" step="0.01" required aria-describedby="nachlass-hinweis" />
+        <div class="hinweis" id="nachlass-hinweis">Geben Sie den Wert des Nachlasses in Euro ein.</div>
+
+        <label for="gueterstand">Güterstand:</label>
+        <select id="gueterstand" name="gueterstand" required aria-describedby="gueterstand-hinweis">
+            <option value="Zugewinngemeinschaft">Zugewinngemeinschaft</option>
+            <option value="Gütertrennung">Gütertrennung</option>
+            <option value="Gütergemeinschaft">Gütergemeinschaft</option>
+        </select>
+        <div class="hinweis" id="gueterstand-hinweis">Wählen Sie den Güterstand der Ehe.</div>
+
+        <label for="kinder">Anzahl Kinder:</label>
+        <input type="number" id="kinder" name="kinder" min="0" value="0" aria-describedby="kinder-hinweis" />
+        <div class="hinweis" id="kinder-hinweis">Geben Sie die Anzahl der lebenden Kinder ein.</div>
+
+        <label for="eltern">Anzahl Eltern (lebend):</label>
+        <input type="number" id="eltern" name="eltern" min="0" value="0" aria-describedby="eltern-hinweis" />
+        <div class="hinweis" id="eltern-hinweis">Geben Sie die Anzahl der lebenden Eltern ein.</div>
+
+        <label for="geschwister">Anzahl Geschwister:</label>
+        <input type="number" id="geschwister" name="geschwister" min="0" value="0" aria-describedby="geschwister-hinweis" />
+        <div class="hinweis" id="geschwister-hinweis">Geben Sie die Anzahl der lebenden Geschwister ein.</div>
+
+        <label for="eheStatus">Ehe-Status:</label>
+        <select id="eheStatus" name="eheStatus" required aria-describedby="eheStatus-hinweis">
+            <option value="nicht geschieden">Nicht geschieden</option>
+            <option value="geschieden – kein Testament">Geschieden – kein Testament</option>
+            <option value="geschieden – mit Testament">Geschieden – mit Testament</option>
+            <option value="kein Ehepartner">Kein Ehepartner</option>
+        </select>
+        <div class="hinweis" id="eheStatus-hinweis">Wählen Sie den Ehe-Status des Verstorbenen.</div>
+
+        <label for="lebenspartner">Lebenspartner:</label>
+        <select id="lebenspartner" name="lebenspartner" required aria-describedby="lebenspartner-hinweis">
+            <option value="lebend">Lebend</option>
+            <option value="verstorben">Verstorben</option>
+            <option value="testamentalisch bedacht">Testamentalisch bedacht</option>
+            <option value="kein Lebenspartner">Kein Lebenspartner</option>
+        </select>
+        <div class="hinweis" id="lebenspartner-hinweis">Wählen Sie den Status des Lebenspartners.</div>
+
+        <label for="testamentAnteil">Testamentarischer Anteil des Lebenspartners (in %):</label>
+        <input type="number" id="testamentAnteil" name="testamentAnteil" min="0" max="100" value="0" aria-describedby="testamentAnteil-hinweis" />
+        <div class="hinweis" id="testamentAnteil-hinweis">Geben Sie den testamentarischen Anteil des Lebenspartners in Prozent ein.</div>
+
+        <button type="submit">Berechnen</button>
+        <button type="button" onclick="resetForm()">Zurücksetzen</button>
+    </form>
+
+    <div id="result"></div>
+
+    <div style="margin-top: 1rem; text-align: center;">
+        <button id="adminToggle" onclick="toggleAdminView()" style="display: none;">Admin-Übersicht anzeigen</button>
+    </div>
+    <div id="adminResult" style="display: none;">
+        <h2>Admin-Übersicht</h2>
+        <p><strong>Eingestellte Daten:</strong></p>
+        <ul id="adminData"></ul>
+        <p><strong>Berechnete Ergebnisse:</strong></p>
+        <ul id="adminResults"></ul>
+    </div>
+
+    <script>
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(amount);
+        }
+
+        function verteileAnteil(restNachlass, anzahl, name) {
+            const anteil = restNachlass / anzahl;
+            const erben = {};
+            for (let i = 0; i < anzahl; i++) {
+                erben[`${name} ${i + 1}`] = anteil;
+            }
+            return erben;
+        }
+
+        function berechne() {
+            const nachlass = parseFloat(document.getElementById('nachlass').value);
+            const gueterstand = document.getElementById('gueterstand').value;
+            const kinder = parseInt(document.getElementById('kinder').value);
+            const eltern = parseInt(document.getElementById('eltern').value);
+            const geschwister = parseInt(document.getElementById('geschwister').value);
+            const eheStatus = document.getElementById('eheStatus').value;
+            const lebenspartner = document.getElementById('lebenspartner').value;
+            const testamentAnteil = parseFloat(document.getElementById('testamentAnteil').value) / 100;
+
+            if (isNaN(nachlass) || nachlass < 0) {
+                alert("Bitte einen gültigen Nachlasswert eingeben.");
+                return;
+            }
+            if (kinder < 0 || eltern < 0 || geschwister < 0) {
+                alert("Anzahlen dürfen nicht negativ sein.");
+                return;
+            }
+            if (testamentAnteil < 0 || testamentAnteil > 1) {
+                alert("Der testamentarische Anteil muss zwischen 0 und 100% liegen.");
+                return;
+            }
+
+            let erben = {};
+
+            if (eheStatus === "geschieden – kein Testament" || eheStatus === "kein Ehepartner") {
+                // Prüfung auf testamentalisch bedachten Lebenspartner zuerst
+                if (lebenspartner === "testamentalisch bedacht") {
+                    erben["Lebenspartner (testamentalisch bedacht)"] = nachlass * testamentAnteil;
+                    const rest = nachlass * (1 - testamentAnteil);
+                    if (testamentAnteil < 1) {
+                        if (kinder > 0) {
+                            Object.assign(erben, verteileAnteil(rest, kinder, "Kind"));
+                        } else if (eltern > 0) {
+                            Object.assign(erben, verteileAnteil(rest, eltern, "Elternteil"));
+                        } else if (geschwister > 0) {
+                            Object.assign(erben, verteileAnteil(rest, geschwister, "Geschwister"));
+                        } else {
+                            erben["Andere Erben"] = rest;
+                        }
+                    }
+                } else {
+                    if (lebenspartner === "lebend") {
+                        erben["Ehegatte"] = 0;
+                    }
+                    if (kinder > 0) {
+                        Object.assign(erben, verteileAnteil(nachlass, kinder, "Kind"));
+                    } else if (eltern > 0) {
+                        Object.assign(erben, verteileAnteil(nachlass, eltern, "Elternteil"));
+                    } else if (geschwister > 0) {
+                        Object.assign(erben, verteileAnteil(nachlass, geschwister, "Geschwister"));
+                    } else {
+                        erben["Andere Erben"] = nachlass;
+                    }
+                }
+            } else if (eheStatus === "geschieden – mit Testament") {
+                if (lebenspartner === "lebend") {
+                    erben["Ehegatte"] = nachlass * 0.1;
+                } else if (lebenspartner === "testamentalisch bedacht") {
+                    erben["Lebenspartner (testamentalisch bedacht)"] = nachlass * testamentAnteil;
+                }
+                erben["Andere Erben"] = nachlass - (erben["Ehegatte"] || 0) - (erben["Lebenspartner (testamentalisch bedacht)"] || 0);
+            } else { // nicht geschieden
+                if (lebenspartner === "lebend") {
+                    if (kinder > 0) {
+                        let ehegatteAnteil = 0, kinderGesamt = 0;
+                        if (gueterstand === "Zugewinngemeinschaft") {
+                            ehegatteAnteil = nachlass * 0.5;
+                            kinderGesamt = nachlass * 0.5;
+                        } else if (gueterstand === "Gütertrennung") {
+                            const anteile = kinder + 1;
+                            ehegatteAnteil = nachlass / anteile;
+                            kinderGesamt = nachlass - ehegatteAnteil;
+                        } else if (gueterstand === "Gütergemeinschaft") {
+                            ehegatteAnteil = nachlass * 0.25;
+                            kinderGesamt = nachlass * 0.75;
+                        }
+                        erben["Ehegatte"] = ehegatteAnteil;
+                        Object.assign(erben, verteileAnteil(kinderGesamt, kinder, "Kind"));
+                    } else if (eltern > 0) {
+                        const ehegatteAnteil = nachlass * 0.5;
+                        const elternGesamt = nachlass * 0.5;
+                        erben["Ehegatte"] = ehegatteAnteil;
+                        Object.assign(erben, verteileAnteil(elternGesamt, eltern, "Elternteil"));
+                    } else if (geschwister > 0) {
+                        const ehegatteAnteil = nachlass * 0.5;
+                        const geschwisterGesamt = nachlass * 0.5;
+                        erben["Ehegatte"] = ehegatteAnteil;
+                        Object.assign(erben, verteileAnteil(geschwisterGesamt, geschwister, "Geschwister"));
+                    } else {
+                        erben["Ehegatte"] = nachlass;
+                    }
+                } else if (lebenspartner === "verstorben" || lebenspartner === "kein Lebenspartner") {
+                    if (kinder > 0) {
+                        Object.assign(erben, verteileAnteil(nachlass, kinder, "Kind"));
+                    } else if (eltern > 0) {
+                        Object.assign(erben, verteileAnteil(nachlass, eltern, "Elternteil"));
+                    } else if (geschwister > 0) {
+                        Object.assign(erben, verteileAnteil(nachlass, geschwister, "Geschwister"));
+                    } else {
+                        erben["Andere Erben"] = nachlass;
+                    }
+                } else if (lebenspartner === "testamentalisch bedacht") {
+                    erben["Lebenspartner (testamentalisch bedacht)"] = nachlass * testamentAnteil;
+                    const rest = nachlass - (nachlass * testamentAnteil);
+                    if (kinder > 0) {
+                        Object.assign(erben, verteileAnteil(rest, kinder, "Kind"));
+                    } else if (eltern > 0) {
+                        Object.assign(erben, verteileAnteil(rest, eltern, "Elternteil"));
+                    } else if (geschwister > 0) {
+                        Object.assign(erben, verteileAnteil(rest, geschwister, "Geschwister"));
+                    } else {
+                        erben["Andere Erben"] = rest;
+                    }
+                }
+            }
+
+            // Ergebnis anzeigen
+            let ausgabe = "Ergebnis der Erbanteile:\n\n";
+            for (const [name, betrag] of Object.entries(erben)) {
+                ausgabe += `${name}: ${formatCurrency(betrag)}\n`;
+            }
+            document.getElementById("result").textContent = ausgabe;
+
+            // Admin-Übersicht vorbereiten
+            const adminData = document.getElementById("adminData");
+            const adminResults = document.getElementById("adminResults");
+            adminData.innerHTML = `
+                <li>Nachlasswert: ${formatCurrency(nachlass)}</li>
+                <li>Güterstand: ${gueterstand}</li>
+                <li>Anzahl Kinder: ${kinder}</li>
+                <li>Anzahl Eltern: ${eltern}</li>
+                <li>Anzahl Geschwister: ${geschwister}</li>
+                <li>Ehe-Status: ${eheStatus}</li>
+                <li>Lebenspartner: ${lebenspartner}</li>
+                <li>Testamentarischer Anteil: ${testamentAnteil * 100}%</li>
+            `;
+            adminResults.innerHTML = "";
+            for (const [name, betrag] of Object.entries(erben)) {
+                adminResults.innerHTML += `<li>${name}: ${formatCurrency(betrag)}</li>`;
+            }
+            document.getElementById("adminToggle").style.display = "block";
+        }
+
+        function resetForm() {
+            document.getElementById("erbeForm").reset();
+            document.getElementById("result").textContent = "";
+            document.getElementById("adminResult").style.display = "none";
+            document.getElementById("adminToggle").style.display = "none";
+            document.getElementById("adminData").innerHTML = "";
+            document.getElementById("adminResults").innerHTML = "";
+        }
+
+        function toggleAdminView() {
+            const adminResult = document.getElementById("adminResult");
+            const toggleButton = document.getElementById("adminToggle");
+            if (adminResult.style.display === "none") {
+                adminResult.style.display = "block";
+                toggleButton.textContent = "Admin-Übersicht ausblenden";
+            } else {
+                adminResult.style.display = "none";
+                toggleButton.textContent = "Admin-Übersicht anzeigen";
+            }
+        }
+    </script>
+</body>
+</html>

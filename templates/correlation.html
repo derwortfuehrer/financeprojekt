@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korrelationsanalyse</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .container { max-width: 1000px; margin: auto; background-color: #f4f4f4; padding: 20px; border-radius: 8px; }
+        h1 { text-align: center; color: #333; }
+        .chart-container { text-align: center; margin-top: 30px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        a, button, select { display: inline-block; margin-bottom: 20px; text-decoration: none; color: white; background-color: #007bff; padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; }
+        select { background-color: #28a745; }
+        button:hover, a:hover, select:hover { opacity: 0.9; }
+        .result { font-size: 18px; color: #333; text-align: center; margin-top: 20px; }
+        .error { color: red; }
+        .ampel { font-weight: bold; padding: 10px; border-radius: 8px; margin-top: 10px; }
+        .green { background-color: #28a745; color: white; }
+        .yellow { background-color: #ffc107; color: black; }
+        .red { background-color: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Korrelationsanalyse</h1>
+
+        <form method="post" action="{{ url_for('correlation') }}">
+            <label for="ticker1">Wertpapier 1:</label><br><br>
+            <select id="ticker1" name="ticker1" required>
+                {% for stock in stocks %}
+                    <option value="{{ stock.ticker }}">{{ stock.name }} ({{ stock.ticker }})</option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <label for="ticker2">Wertpapier 2:</label><br><br>
+            <select id="ticker2" name="ticker2" required>
+                {% for stock in stocks %}
+                    <option value="{{ stock.ticker }}">{{ stock.name }} ({{ stock.ticker }})</option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <button type="submit">Korrelation berechnen</button>
+        </form>
+
+        <a href="{{ url_for('index') }}">Zurück zur Auswahl</a>
+        <a href="{{ url_for('correlation_erklaerung') }}">Was bedeutet Korrelation?</a>
+
+        {% if error_message %}
+            <p class="error">{{ error_message }}</p>
+        {% endif %}
+
+        {% if correlation_result %}
+            <div class="result">
+                <p><strong>Korrelationskoeffizient: {{ correlation_result }}</strong></p>
+
+                {% if correlation_result > 0.7 %}
+                    <div class="ampel green">➔ Starke positive Korrelation</div>
+                {% elif correlation_result > 0.3 %}
+                    <div class="ampel yellow">➔ Schwache positive Korrelation</div>
+                {% elif correlation_result > -0.3 %}
+                    <div class="ampel">➔ Keine nennenswerte Korrelation</div>
+                {% elif correlation_result > -0.7 %}
+                    <div class="ampel yellow">➔ Schwache negative Korrelation</div>
+                {% else %}
+                    <div class="ampel red">➔ Starke negative Korrelation</div>
+                {% endif %}
+            </div>
+
+            {% if chart %}
+                <div class="chart-container">
+                    <img src="data:image/png;base64,{{ chart }}" alt="Korrelations-Scatter-Plot">
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>

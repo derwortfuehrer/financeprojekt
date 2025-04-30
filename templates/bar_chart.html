@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balkendiagramm Kurs vs. Dividende</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f9f9f9; }
+        .container { max-width: 1000px; margin: auto; background-color: white; padding: 20px; border-radius: 8px; }
+        h1 { text-align: center; }
+        img { width: 100%; height: auto; margin-top: 20px; }
+        a { display: inline-block; margin-top: 20px; background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+        a:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kursgewinne vs. Dividendenrenditen</h1>
+        {% if bar_chart %}
+            <img src="data:image/png;base64,{{ bar_chart }}" alt="Balkendiagramm Kurs vs Dividende">
+        {% else %}
+            <p>Kein Diagramm verfügbar.</p>
+        {% endif %}
+        <a href="{{ url_for('index') }}">Zurück zur Startseite</a>
+    </div>
+</body>
+</html>

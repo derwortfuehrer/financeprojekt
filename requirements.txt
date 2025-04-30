@@ -1,0 +1,7 @@
+Flask
+yfinance
+pandas
+matplotlib
+yahooquery
+gunicorn
+fpdf

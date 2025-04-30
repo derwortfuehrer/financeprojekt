@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Was bedeutet Korrelation?</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: auto; background-color: #f4f4f4; padding: 20px; border-radius: 8px; }
+        h1 { text-align: center; color: #333; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        p { font-size: 16px; margin-top: 20px; }
+        ul { margin-top: 20px; }
+        li { margin-bottom: 10px; }
+        a { display: inline-block; margin-top: 30px; text-decoration: none; color: white; background-color: #007bff; padding: 10px 20px; border-radius: 5px; }
+        a:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Was bedeutet Korrelation?</h1>
+
+        <p><strong>Korrelation</strong> beschreibt, wie stark zwei Wertpapiere miteinander zusammenhängen.</p>
+
+        <p>Ein <strong>Korrelationskoeffizient</strong> bewegt sich immer zwischen <strong>-1</strong> und <strong>+1</strong>:</p>
+
+        <table>
+            <tr>
+                <th>Wert</th>
+                <th>Bedeutung</th>
+            </tr>
+            <tr>
+                <td><strong>+1</strong></td>
+                <td>Perfekte positive Korrelation (laufen exakt gleich)</td>
+            </tr>
+            <tr>
+                <td><strong>0</strong></td>
+                <td>Keine Korrelation (Bewegungen sind unabhängig)</td>
+            </tr>
+            <tr>
+                <td><strong>-1</strong></td>
+                <td>Perfekte negative Korrelation (laufen exakt entgegengesetzt)</td>
+            </tr>
+        </table>
+
+        <p>Je näher der Wert an <strong>+1</strong> oder <strong>-1</strong> liegt, desto stärker ist der Zusammenhang.</p>
+
+        <h2>Wie hilft Ihnen unsere App?</h2>
+
+        <p>Unsere App analysiert automatisch die Beziehung zwischen zwei Wertpapieren und gibt eine klare farbliche Einschätzung:</p>
+
+        <ul>
+            <li><strong>Grün:</strong> Starke positive Korrelation</li>
+            <li><strong>Gelb:</strong> Schwache oder moderate Korrelation</li>
+            <li><strong>Rot:</strong> Starke negative Korrelation</li>
+        </ul>
+
+        <p>✅ Auf einen Blick erkennen Sie, ob zwei Investments sinnvoll miteinander kombinierbar sind!</p>
+
+        <a href="{{ url_for('correlation') }}">Zurück zur Korrelationsanalyse</a>
+    </div>
+</body>
+</html>

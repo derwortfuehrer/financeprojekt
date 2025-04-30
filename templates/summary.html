@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zusammenfassung - Aktienanalyse</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f9f9f9; }
+        .container { max-width: 1000px; margin: auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
+        th { background-color: #007bff; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        a { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        a:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aktien Zusammenfassung</h1>
+        <a href="{{ url_for('summary_pdf') }}">Zusammenfassung als PDF herunterladen</a>
+</br>
+</br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Startpreis (€)</th>
+                    <th>Endpreis (€)</th>
+                    <th>Kursgewinn (%)</th>
+                    <th>Dividenden (€)</th>
+                    <th>Gesamtrendite (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in summary_data %}
+                    <tr>
+                        <td>{{ stock.name }} ({{ stock.ticker }})</td>
+                        <td>{{ stock.start_price }}</td>
+                        <td>{{ stock.end_price }}</td>
+                        <td>{{ stock.kursgewinn_prozent }}</td>
+                        <td>{{ stock.dividenden_total }}</td>
+                        <td>{{ stock.gesamtrendite }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ url_for('index') }}">Zurück zur Hauptseite</a>
+    </div>
+</body>
+</html>

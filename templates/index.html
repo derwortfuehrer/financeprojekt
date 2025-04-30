@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktien Analyse</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .container { max-width: 1000px; margin: auto; background-color: #f4f4f4; padding: 20px; border-radius: 8px; }
+        h1, h2 { text-align: center; color: #333; }
+        a, button { display: inline-block; margin-bottom: 20px; text-decoration: none; color: white; background-color: #007bff; padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; }
+        button:hover, a:hover { opacity: 0.9; }
+        .stock-list { margin-top: 20px; }
+        .stock-item { background-color: white; padding: 10px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        form { margin-top: 20px; }
+        input[type="text"] { padding: 10px; width: 60%; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aktien Analyse</h1>
+
+        <div style="text-align: center;">
+            <a href="{{ url_for('analyze') }}">Aktien Analyse starten</a>
+            <a href="{{ url_for('compare') }}">Wertpapiervergleich</a>
+            <a href="{{ url_for('correlation') }}">Korrelationsanalyse</a>
+            <a href="{{ url_for('erbrecht_rechner') }}">Erbrecht-Rechner</a>
+             <a href="{{ url_for('bar_chart') }}">Balkendiagramm</a>
+             <a href="{{ url_for('summary') }}">Zusammenfassung (Kurs & Dividenden)</a>
+
+        </div>
+
+        <h2>Aktuelle Aktienliste</h2>
+        {% if error_message %}
+            <p style="color:red;">{{ error_message }}</p>
+        {% endif %}
+        
+        <div class="stock-list">
+            {% for idx, stock in enumerate(stocks) %}
+                <div class="stock-item">
+                    <strong>{{ idx + 1 }}. {{ stock.name }} ({{ stock.ticker }})</strong>
+                    <form method="post" style="display:inline;">
+                        <input type="hidden" name="ticker" value="{{ stock.ticker }}">
+                        <button type="submit" name="action" value="remove">Entfernen</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+
+        <form method="post">
+            <input type="text" name="query" placeholder="Aktie/ETF suchen...">
+            <button type="submit" name="action" value="search">Suchen</button>
+        </form>
+
+        {% if search_results %}
+            <h2>Suchergebnisse</h2>
+            {% for result in search_results %}
+                <div class="stock-item">
+                    <strong>{{ result.name }} ({{ result.ticker }})</strong>
+                    <form method="post" style="display:inline;">
+                        <input type="hidden" name="ticker" value="{{ result.ticker }}">
+                        <input type="hidden" name="name" value="{{ result.name }}">
+                        <button type="submit" name="action" value="add">Hinzufügen</button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" style="margin-top:20px;">
+            <button type="submit" name="action" value="reset">Standardliste wiederherstellen</button>
+        </form>
+    </div>
+</body>
+</html>

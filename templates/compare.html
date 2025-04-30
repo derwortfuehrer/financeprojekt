@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wertpapiervergleich</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .container { max-width: 1000px; margin: auto; background-color: #f4f4f4; padding: 20px; border-radius: 8px; }
+        .chart-container { margin-top: 30px; text-align: center; background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        a, button, select { display: inline-block; margin-bottom: 20px; text-decoration: none; color: white; background-color: #007bff; padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; }
+        select { background-color: #28a745; }
+        button:hover, a:hover, select:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wertpapiervergleich</h1>
+
+        <form method="post" action="{{ url_for('compare') }}">
+            <label for="ticker1">Wertpapier 1:</label><br><br>
+            <select id="ticker1" name="ticker1" required>
+                {% for stock in stocks %}
+                    <option value="{{ stock.ticker }}">{{ stock.name }} ({{ stock.ticker }})</option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <label for="ticker2">Wertpapier 2:</label><br><br>
+            <select id="ticker2" name="ticker2" required>
+                {% for stock in stocks %}
+                    <option value="{{ stock.ticker }}">{{ stock.name }} ({{ stock.ticker }})</option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <button type="submit">Vergleich starten</button>
+        </form>
+
+        <a href="{{ url_for('index') }}">Zurück zur Auswahl</a>
+
+        {% if error_message %}
+            <p style="color:red;">{{ error_message }}</p>
+        {% endif %}
+
+        {% if chart %}
+            <div class="chart-container">
+                <img src="data:image/png;base64,{{ chart }}" alt="Vergleichs-Chart">
+            </div>
+            {% if performance_table %}
+                <h2>Performancevergleich</h2>
+                <ul>
+                    {% for entry in performance_table %}
+                        <li>{{ entry.ticker }}: {{ entry.performance }}%</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>
